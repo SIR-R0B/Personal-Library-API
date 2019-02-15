@@ -32,8 +32,6 @@ module.exports = function (app) {
     .get(function (req, res){
     var q = req.query.string;
     book.find(q,(err,data)=>err ? err.stack : res.json(data));
-      //response will be array of book objects
-      //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
     })
     
     .post(function (req, res){
@@ -41,11 +39,11 @@ module.exports = function (app) {
      (req.body.title) ? title = req.body.title : res.json('missing title');
       var addBook = new book({title: title});
     addBook.save((err,data)=>(err ? err.stack : res.json(data)));
-    
-      //response will contain new book object including atleast _id and title
     })
     
     .delete(function(req, res){
+    var bookid = req.params.id;
+    book.remove({}, (err,data) => err ? res.json(err) : res.json('complete delete successful'));
       //if successful response will be 'complete delete successful'
     });
 
@@ -67,8 +65,10 @@ module.exports = function (app) {
       var comment = req.body.comment;
     
     book.findById(bookid, (err,data)=> {
-    if(err) {
-    if (err) return res.json('no book exists');
+      if(!data) return res.json('no book exists'); //error handling needed for valid format _id hash that does not exist in DB
+      if(err) {
+      console.log(err);
+    if (err.reason == undefined) return res.json('no book exists');
     }
       data.comments.push(comment);
       data.commentcount = data.comments.length;
@@ -79,7 +79,7 @@ module.exports = function (app) {
     
     .delete(function(req, res){
       var bookid = req.params.id;
-      //if successful response will be 'delete successful'
+    book.findByIdAndRemove(bookid, (err,data) => err ? res.json(err) : res.json('delete successful'));
     });
   
 };

@@ -147,6 +147,38 @@ suite('Functional Tests', function() {
 
   });
 
-});
+ // 2 }); removed here .. custom tests
+suite('DELETE /api/books/[id] => expect remove one with id', function(){
+      
+      test('Test Delete /api/books/[id]', function(done){
+         chai.request(server)
+        .delete('/api/books/'+idToFind)
+        .end((err,res)=>{
+         assert.equal(res.status,200);
+         assert.isString(res.body, 'response should be a String');
+         assert.equal(res.body, 'delete successful');
+         done();
+      });
+      
+    });
 
+  });
+    
+suite('DELETE /api/books/ => expect delete all documents in collection', function(){
+      
+      test('Test Delete /api/books/', function(done){
+         chai.request(server)
+        .delete('/api/books/')
+        .end((err,res)=>{
+         assert.equal(res.status,200);
+         assert.isString(res.body, 'response should be a String');
+         assert.equal(res.body, 'complete delete successful');
+         done();
+      });
+      
+    });
+
+  });    
+    
+});
 });
